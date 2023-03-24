@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="input_Csv_metaData" format="csv">
+      <types:shape format="weave"><![CDATA[%dw 2.0
+
+type input_Csv_metaData = Array<{|  id: Number,   Name: String,   Age: Number,   Gender: String,   DOB: Date,   City: String|}> {"isQuotedString": "false",
+"header": "true",
+"headerLineNumber": "0"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="output_csv" format="json">
+      <types:shape format="weave" example="examples/new.json"><![CDATA[%dw 2.0
+
+type output_csv = Array<{|  std_id: Number {"typeId": "int"},   name: String,   age: Number {"typeId": "int"},   gender: String,   dob: String,   city: String|}> {"example": "[{\\\"std_id\\\":100,\\\"name\\\":\\\"ranjith\\\",\\\"age\\\":20,\\\"gender\\\":\\\"M\\\",\\\"dob\\\":\\\"1994-08-19\\\",\\\"city\\\":\\\"vki\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#c49040e0-0c97-42ad-a4c6-bb6f95eb0d93">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="input_Csv_metaData"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="output_csv"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

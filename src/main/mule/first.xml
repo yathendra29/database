@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4cc5d4b4-1c69-40fc-872e-3aac5ef3c4a0" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="6349eefc-0074-4699-b93f-9a74e9638f32" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="Raghava$777" database="myfirstdb" />
+	</db:config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="9463784e-bda9-4822-8af0-7749350fb12b" />
+	<flow name="firstFlow" doc:id="afcf188e-8573-4c33-9f36-9bbbeced7d54" >
+		<http:listener doc:name="Listener" doc:id="4e91546b-3e40-4d45-ae78-337f71926404" config-ref="HTTP_Listener_config" path="/dbselect"/>
+		<logger level="INFO" doc:name="Logger" doc:id="54275f00-6761-479c-9c5b-0fd7ebb1eeed" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="dfc6fc8d-b7e4-4928-86f3-48ddd803abe0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:select doc:name="Select" doc:id="c1cde022-c405-4afd-aa58-d5dc41a79e9d" config-ref="Database_Config">
+			<db:sql><![CDATA[select * from myfirstdb.studentdetails where city='vki']]></db:sql>
+		</db:select>
+	</flow>
+	<flow name="firstFlow1" doc:id="237b8e23-35d7-4f1f-983a-9f79d002f5ac" >
+		<http:listener doc:name="Listener" doc:id="97662f19-590f-4995-a1df-b29c526381df" config-ref="HTTP_Listener_config" path="/dbcreate"/>
+		<db:insert doc:name="Insert" doc:id="e2339dc0-faea-400b-9efb-53679ad67e64" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into studentdetails values(113,"ntr",100,'M','1893-03-21','nimmakur');]]></db:sql>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="2290d844-bd7a-4a3e-8e40-46cadc20f7f5" message="after db"/>
+		<ee:transform doc:name="Transform Message" doc:id="c95eae3e-ef40-4d85-a2fc-aa627dc489dd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow2" doc:id="fb134e4b-155e-4e90-9c67-f6f17a196465" >
+		<http:listener doc:name="Listener" doc:id="8023a89f-461e-490b-b055-e858e2b9d262" config-ref="HTTP_Listener_config" path="/dbupdate"/>
+		<db:update doc:name="Update" doc:id="1471ca6a-2a4e-44f5-b634-c16a00cf8fab" config-ref="Database_Config">
+			<db:sql ><![CDATA[update myfirstdb.studentdetails set city='Hindupur' where std_id=113]]></db:sql>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="731fd4f8-f947-45ea-9b3d-8b5868b022b0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow3" doc:id="a752f2ea-a651-417e-9ef6-06205271dbb5" >
+		<http:listener doc:name="Listener" doc:id="38876461-f0ad-4c37-9f24-3a3331685d27" config-ref="HTTP_Listener_config" path="/dbdelete"/>
+		<db:delete doc:name="Delete" doc:id="0b456031-01b1-41e7-9a1e-2072aa39b78c" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from myfirstdb.studentdetails where std_id=113]]></db:sql>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="ddd31c3b-5ce3-4e32-9648-26b73175c404" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow4" doc:id="cad74a4d-9f61-4805-8337-5bbd6e397914" >
+		<http:listener doc:name="Listener" doc:id="37d84346-6f7d-4831-bad9-8f5fb58ff68a" config-ref="HTTP_Listener_config" path="/dbselectInputParameters"/>
+		<db:select doc:name="Select" doc:id="4c79579a-833d-4459-8e06-2f9fa2d50883" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from myfirstdb.studentdetails where city = :city]]></db:sql>
+			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="274da04a-b201-4f0c-8619-3ebcb684abbc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow5" doc:id="3471c052-fcd3-4d74-b0a2-2a7f97325e79" >
+		<http:listener doc:name="Listener" doc:id="4d3c9a1c-ca60-4efc-af0d-f20c62458265" config-ref="HTTP_Listener_config" path="/dbInsertnputParameters"/>
+		<db:insert doc:name="Insert" doc:id="5b213942-9adc-4190-91d2-e8875bb18f7b" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into myfirstdb.studentdetails values(:std_id,:name,:age,:gender,:dob,:city)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="83b2bc0e-0592-4a87-b3f7-5bb14aba7bb2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow6" doc:id="53c36ae9-a124-4aac-ac78-5acf75c7311c" >
+		<http:listener doc:name="Listener" doc:id="bf304714-9024-4abc-8e16-820fcdb40492" config-ref="HTTP_Listener_config" path="/dbBulkInsert"/>
+		<db:bulk-insert doc:name="Bulk insert" doc:id="3d2e85e5-7f4b-4a77-ac7a-0a2e2ec22b5f" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into myfirstdb.studentdetails values(:std_id,:name,:age,:gender,:dob,:city)]]></db:sql>
+		</db:bulk-insert>
+		<ee:transform doc:name="Transform Message" doc:id="97615785-56c9-4d52-a953-20ec96920e60" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow7" doc:id="1ec30a33-f914-4605-9a74-7ce56ae5da33" >
+		<http:listener doc:name="Listener" doc:id="910e49e2-dc81-46bb-a7bb-48a927365548" config-ref="HTTP_Listener_config" path="/dbUpdateInputParameters"/>
+		<db:update doc:name="Update" doc:id="01fb0cd3-a84c-403a-afdf-b8919213482a" config-ref="Database_Config">
+			<db:sql ><![CDATA[update myfirstdb.studentdetails set name =:name where std_id = :std_id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"std_id" : payload.std_id ,
+	"name" : payload.name
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="46da874e-f923-4a65-8806-4b43c24dcd5d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow8" doc:id="713750ee-dbe2-4742-ab5c-8664dac2ebbf" >
+		<http:listener doc:name="Listener" doc:id="ad0820e0-55be-47ac-b797-5b362873b122" config-ref="HTTP_Listener_config" path="/dbDeleteInputParameters"/>
+		<db:delete doc:name="Delete" doc:id="ea8df527-db82-43d0-a1e8-0660b6c9df48" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from myfirstdb.studentdetails where std_id = :std_id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"std_id" : attributes.queryParams.std_id
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="fb3768e4-934b-48f5-9b95-03b44f11a6ac" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow9" doc:id="179966db-e79f-41e9-8eca-29f6650a7aeb" >
+		<http:listener doc:name="Listener" doc:id="6ddc5efa-4aa7-4473-a59e-6df961078727" config-ref="HTTP_Listener_config" path="/dbBulkUpdate"/>
+		<db:bulk-update doc:name="Bulk update" doc:id="0104ffcf-2af3-4322-af19-626a76a67be7" config-ref="Database_Config">
+			<db:sql ><![CDATA[update myfirstdb.studentdetails set city =:city where name = :name]]></db:sql>
+		</db:bulk-update>
+		<ee:transform doc:name="Transform Message" doc:id="1605ee09-fcb2-4c2d-9945-b2d2e7e2f2aa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow10" doc:id="bc5bf66a-c087-4b0c-ad1a-6dbebb95af3a" >
+		<http:listener doc:name="Listener" doc:id="1a36a26d-7b48-4adb-9981-f30d1479bc0f" config-ref="HTTP_Listener_config" path="/bulkDelete"/>
+		<db:bulk-delete doc:name="Bulk delete" doc:id="629295d1-c7a1-4f79-b7d5-87fdb3b09f8b" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from myfirstdb.studentdetails where name = :name]]></db:sql>
+		</db:bulk-delete>
+		<ee:transform doc:name="Transform Message" doc:id="4e2f80af-b843-4368-86e0-1ba19e8e50c9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow11" doc:id="7de9ce5c-200e-4293-91a9-881654e98453" >
+		<http:listener doc:name="Listener" doc:id="8ff4453a-c8ee-42c1-b322-92542dd2fa2b" config-ref="HTTP_Listener_config" path="/ddl"/>
+		<db:execute-ddl doc:name="Execute DDL" doc:id="01fac636-4ec5-4309-8597-ad8de1fc7188" config-ref="Database_Config">
+			<db:sql ><![CDATA[create table employeeDetails(
+emp_id int primary key,
+emp_name varchar(25),
+age int,
+city varchar(20),
+doj date
+)]]></db:sql>
+		</db:execute-ddl>
+		<ee:transform doc:name="Transform Message" doc:id="3622f1cd-17ab-45e5-b832-a6d3c9e81b9c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow12" doc:id="c1db4d0b-203f-4aee-b155-939a89e5575e" >
+		<http:listener doc:name="Listener" doc:id="f67f96aa-340c-4659-b32c-1f6597c5834c" config-ref="HTTP_Listener_config" path="/executeScript"/>
+		<db:execute-script doc:name="Execute script" doc:id="ebb35a26-6194-4c25-9fd6-d66dab62ee1c" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into myfirstdb.employeeDetails values(101,'yathendra',29,'venkatagiri',"2022-07-29"),
+                                            (102,'pravana',30,'hyderabad',"2021-07-29"),
+                                            (103,'raghava',31,'bangalore',"2020-07-29")]]></db:sql>
+		</db:execute-script>
+		<ee:transform doc:name="Transform Message" doc:id="9a37fd3e-4b4b-4587-bd5b-0a72fe4c9ceb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow13" doc:id="4b041e21-f973-4e12-b0ff-b4440b43014c" >
+		<http:listener doc:name="Listener" doc:id="58ff04ec-7ffb-42af-a578-a9144ce35816" config-ref="HTTP_Listener_config" path="/ExecuteScriptThroughScriptPath"/>
+		<db:execute-script doc:name="Execute script" doc:id="975fa082-cc45-4f50-a38e-398749806501" config-ref="Database_Config" file="insert.sql"/>
+		<ee:transform doc:name="Transform Message" doc:id="ba82581d-4a4a-4db1-b8b8-8933fd3c0c29" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="firstFlow14" doc:id="2d621156-e8f0-47e8-8e6a-6db03d204b71" >
+		<http:listener doc:name="Listener" doc:id="5e06f460-6c22-45b3-8e22-759c62486707" config-ref="HTTP_Listener_config" path="sp"/>
+		<db:stored-procedure doc:name="Stored procedure" doc:id="484a82ff-c735-4d55-8759-656f342b3052" config-ref="Database_Config">
+			<db:sql ><![CDATA[{call addEmployees(110,'yuvraj',40,'punjab','1984-10-10')}]]></db:sql>
+		</db:stored-procedure>
+		<ee:transform doc:name="Transform Message" doc:id="9feec13c-d470-428c-8f1f-7abc4b536aec" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="Import_CSV_File_into_DATABASE" doc:id="6910aa01-aa72-4b23-9eb1-27df0898c8ce" >
+		<http:listener doc:name="Listener" doc:id="263b29c8-7b73-44e8-84c1-54c93363826a" config-ref="HTTP_Listener_config" path="/csv"/>
+		<file:read doc:name="Reading csv file" doc:id="8af6e6a1-3798-41dd-beee-ef6082d1478c" config-ref="File_Config" path="C:\Users\Admin\Documents\std.csv"/>
+		<ee:transform doc:name="mapping the csv file into collection" doc:id="c49040e0-0c97-42ad-a4c6-bb6f95eb0d93" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	std_id: payload01.id,
+	name: payload01.Name,
+	age: payload01.Age,
+	gender: payload01.Gender,
+	dob: payload01.DOB as String,
+	city: payload01.City
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="06be747f-d0e7-416f-8414-15d482c5d648" >
+			<logger level="INFO" doc:name="Logger" doc:id="79ab8af7-0205-4964-b346-673b0db0fa5f" message="#[payload]"/>
+			<db:insert doc:name="Insert" doc:id="77624640-05ec-4951-a91f-9770ec694e94" config-ref="Database_Config">
+				<db:sql ><![CDATA[insert into myfirstdb.studentdetails values(:std_id,:name,:age,:gender,:dob,:city)]]></db:sql>
+				<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+			</db:insert>
+		</foreach>
+	</flow>
+	<flow name="inserting_json_as_value_in_database" doc:id="1fe1f32c-dbe5-4708-96a1-9c395143dcdc" >
+		<http:listener doc:name="Listener" doc:id="c5188ea0-313e-4690-931f-d83d6d1d9c60" config-ref="HTTP_Listener_config" path="/json"/>
+		<ee:transform doc:name="input payload" doc:id="9b11219d-78b7-4297-81f8-820739cfc12e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"name":"yathendra"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="write method" doc:id="775c0549-d8c4-4640-a52b-d9ba0e888d64" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"insert":write(payload,'application/json') as String
+}
+
+// write(payload,'application/json') this or above you can try any]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="Insert" doc:id="fc712503-e673-476b-8ddd-a4dcc60cc61c" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into myfirstdb.json values(:data)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"data":payload.insert
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="05dfea24-545c-48ec-aa67-e24906fc34dd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"inserted succesfully"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
